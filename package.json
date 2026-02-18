@@ -1,0 +1,39 @@
+{
+  "name": "ultralearn",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^3.0.29",
+    "@ai-sdk/openai-compatible": "^2.0.30",
+    "@ai-sdk/react": "^3.0.88",
+    "@auth/prisma-adapter": "^2.11.1",
+    "@prisma/client": "^7.4.0",
+    "@stripe/stripe-js": "^8.7.0",
+    "ai": "^6.0.86",
+    "bcryptjs": "^3.0.3",
+    "framer-motion": "^12.34.0",
+    "lucide-react": "^0.569.0",
+    "next": "16.1.6",
+    "next-auth": "^5.0.0-beta.30",
+    "prisma": "^7.4.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "stripe": "^20.3.1",
+    "zustand": "^5.0.11"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "typescript": "^5"
+  }
+}
