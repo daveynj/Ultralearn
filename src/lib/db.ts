@@ -11,35 +11,49 @@ const globalForPrisma = globalThis as unknown as {
  */
 function createPrismaClient(): PrismaClient {
     const dbUrl = process.env.DATABASE_URL;
-    if (!dbUrl) {
+
+    // Check if URL looks like a valid connection string
+    const isValidUrl = typeof dbUrl === "string" &&
+        (dbUrl.startsWith("postgres") || dbUrl.startsWith("mysql") || dbUrl.startsWith("file"));
+
+    if (!isValidUrl) {
         console.warn(
-            "⚠ DATABASE_URL is not set — database features will be unavailable"
+            "⚠ DATABASE_URL is not configured or invalid — database features will be unavailable"
         );
-        // Return a proxy that throws a helpful error on any method call
-        return new Proxy({} as PrismaClient, {
-            get(_target, prop) {
-                // Allow toString / Symbol.toPrimitive etc. for debug
-                if (typeof prop === "symbol" || prop === "then") return undefined;
-                // Return a function that throws for any model access (user, lesson, etc.)
-                return new Proxy(() => { }, {
-                    get() {
-                        return () => {
-                            throw new Error(
-                                `Database unavailable: DATABASE_URL is not configured. Set it in .env.local to enable database features.`
-                            );
-                        };
-                    },
-                    apply() {
-                        throw new Error(
-                            `Database unavailable: DATABASE_URL is not configured.`
-                        );
-                    },
-                });
-            },
-        });
+        return createProxy();
     }
 
-    return new PrismaClient();
+    try {
+        return new PrismaClient();
+    } catch (e) {
+        console.error("⚠ Failed to initialize PrismaClient, falling back to proxy mode:", e);
+        return createProxy();
+    }
+}
+
+function createProxy(): PrismaClient {
+    // Return a proxy that throws a helpful error on any method call
+    return new Proxy({} as PrismaClient, {
+        get(_target, prop) {
+            // Allow toString / Symbol.toPrimitive etc. for debug
+            if (typeof prop === "symbol" || prop === "then") return undefined;
+            // Return a function that throws for any model access (user, lesson, etc.)
+            return new Proxy(() => { }, {
+                get() {
+                    return () => {
+                        throw new Error(
+                            `Database unavailable: DATABASE_URL is not configured. Set it in .env.local to enable database features.`
+                        );
+                    };
+                },
+                apply() {
+                    throw new Error(
+                        `Database unavailable: DATABASE_URL is not configured.`
+                    );
+                },
+            });
+        },
+    });
 }
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
