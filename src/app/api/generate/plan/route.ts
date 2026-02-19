@@ -63,9 +63,11 @@ export async function POST(request: NextRequest) {
             topic,
         });
     } catch (error) {
-        console.error("Error generating plan:", error);
+        console.error("[v0] Error generating plan:", error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error("[v0] Error details:", errorMessage);
         return NextResponse.json(
-            { error: "Failed to generate lesson plan" },
+            { error: "Failed to generate lesson plan", details: errorMessage },
             { status: 500 }
         );
     }

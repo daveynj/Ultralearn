@@ -102,9 +102,11 @@ export async function POST(request: NextRequest) {
             imageCount: Object.keys(imageUrls).length,
         });
     } catch (error) {
-        console.error("Error generating lesson:", error);
+        console.error("[v0] Error generating lesson:", error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error("[v0] Error details:", errorMessage);
         return NextResponse.json(
-            { error: "Failed to generate lesson content" },
+            { error: "Failed to generate lesson content", details: errorMessage },
             { status: 500 }
         );
     }
